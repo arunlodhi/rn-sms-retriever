@@ -8,7 +8,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
-
+import android.content.Context.RECEIVER_EXPORTED
+import android.os.Build
 
 class SMSHelper(private val mContext: ReactApplicationContext) {
   private var mReceiver: BroadcastReceiver? = null
@@ -37,7 +38,12 @@ class SMSHelper(private val mContext: ReactApplicationContext) {
     mReceiver = SmsBroadcastReceiver(mContext)
     val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
     return try {
-      mContext.registerReceiver(mReceiver, intentFilter)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        mContext.registerReceiver(mReceiver, intentFilter)  
+      }
+      else {
+        mContext.registerReceiver(mReceiver, intentFilter);
+      }
       true
     } catch (e: Exception) {
       e.printStackTrace()
