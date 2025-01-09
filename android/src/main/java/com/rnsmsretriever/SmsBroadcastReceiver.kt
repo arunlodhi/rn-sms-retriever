@@ -30,7 +30,11 @@ class SmsBroadcastReceiver(private val mContext: ReactApplicationContext?) : Bro
       }
       when (status.statusCode) {
         CommonStatusCodes.SUCCESS -> {
-          val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String
+          val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as? String
+          if (message == null) {
+            emitJSEvent(MESSAGE_ERROR_KEY, MESSAGE_NULL_ERROR_MESSAGE)
+            return
+          }
           emitJSEvent(MESSAGE_KEY, message)
         }
         CommonStatusCodes.TIMEOUT -> {
@@ -57,10 +61,12 @@ class SmsBroadcastReceiver(private val mContext: ReactApplicationContext?) : Bro
     private const val SMS_EVENT = "me.furtado.smsretriever:SmsEvent"
     private const val EXTRAS_KEY = "extras"
     private const val MESSAGE_KEY = "message"
+    private const val MESSAGE_ERROR_KEY = "message_error"
     private const val STATUS_KEY = "status"
     private const val TIMEOUT_KEY = "timeout"
     private const val EXTRAS_NULL_ERROR_MESSAGE = "Extras is null."
     private const val STATUS_NULL_ERROR_MESSAGE = "Status is null."
+    private const val MESSAGE_NULL_ERROR_MESSAGE = "Message is null."
     private const val TIMEOUT_ERROR_MESSAGE = "Timeout error."
   }
 
